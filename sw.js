@@ -1,6 +1,6 @@
 /* Offline support: the page itself is network-first (so updates show up), with the last copy
    kept for offline use; paper images and icons are cache-first. Supabase calls are never cached. */
-const CACHE = 'hub-v4';
+const CACHE = 'hub-v5';
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'manifest.webmanifest', 'icon-192.png']))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
@@ -21,8 +21,8 @@ self.addEventListener('fetch', e => {
 
 /* Exam reminders */
 self.addEventListener('push', e => {
-  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (x) { d = { title: '7th Sem Study Hub', body: e.data && e.data.text() }; }
-  e.waitUntil(self.registration.showNotification(d.title || '7th Sem Study Hub', { body: d.body || '', icon: 'icon-192.png', badge: 'icon-192.png', tag: d.tag || 'exam', data: { url: d.url || './' } }));
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (x) { d = { title: 'Semcrasher', body: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'Semcrasher', { body: d.body || '', icon: 'icon-192.png', badge: 'icon-192.png', tag: d.tag || 'exam', data: { url: d.url || './' } }));
 });
 self.addEventListener('notificationclick', e => {
   e.notification.close(); const url = (e.notification.data && e.notification.data.url) || './';

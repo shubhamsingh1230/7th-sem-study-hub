@@ -1,4 +1,4 @@
-# 7th Sem Study Hub
+# Semcrasher
 
 Exam-prep website for CSVTU B.Tech CSE 7th semester (SSTC Bhilai): top-5 PYQs per unit with 8-mark answers for Deep Learning, ERP, DIP, IWT and Advanced R, plus quick answers, summaries, mock MCQs, mock papers, progress tracking and a class leaderboard.
 
