@@ -1,6 +1,6 @@
 /* Offline support: the page itself is network-first (so updates show up), with the last copy
    kept for offline use; paper images and icons are cache-first. Supabase calls are never cached. */
-const CACHE = 'hub-v3';
+const CACHE = 'hub-v4';
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'manifest.webmanifest', 'icon-192.png']))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
@@ -10,7 +10,13 @@ self.addEventListener('fetch', e => {
     e.respondWith(fetch(r).then(res => { const c = res.clone(); caches.open(CACHE).then(x => x.put('./', c)); return res; }).catch(() => caches.match('./')));
     return;
   }
-  e.respondWith(caches.match(r).then(hit => hit || fetch(r).then(res => { if (res.ok) { const c = res.clone(); caches.open(CACHE).then(x => x.put(r, c)); } return res; })));
+  // hashed files (app.<hash>.js, sb.<hash>.js, notes.<hash>.txt) never change: keep the newest of each, drop older ones
+  const hm = u.pathname.match(/\/(app|sb|notes)\.[0-9a-f]{10}\.(js|txt)$/);
+  e.respondWith(caches.match(r).then(hit => hit || fetch(r).then(res => {
+    if (res.ok) { const c = res.clone(); caches.open(CACHE).then(async x => {
+      if (hm) { for (const q of await x.keys()) { const p = new URL(q.url).pathname; if (p !== u.pathname && new RegExp('/' + hm[1] + '\\.[0-9a-f]{10}\\.').test(p)) await x.delete(q); } }
+      await x.put(r, c); }); }
+    return res; })));
 });
 
 /* Exam reminders */
