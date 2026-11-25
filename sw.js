@@ -1,6 +1,6 @@
 /* Offline support: the page itself is network-first (so updates show up), with the last copy
    kept for offline use; paper images and icons are cache-first. Supabase calls are never cached. */
-const CACHE = 'hub-v2';
+const CACHE = 'hub-v3';
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'manifest.webmanifest', 'icon-192.png']))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
