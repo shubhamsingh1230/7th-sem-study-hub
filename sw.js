@@ -1,6 +1,6 @@
-/* Offline support: the page itself is network-first (so updates show up), with the last copy
-   kept for offline use; paper images and icons are cache-first. Supabase calls are never cached. */
-const CACHE = 'hub-v5';
+/* Offline support: the page, manifest and icons are network-first (so updates show up), with the last copy
+   kept for offline use; paper images and hashed code/notes files are cache-first. Supabase calls are never cached. */
+const CACHE = 'hub-v6';
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'manifest.webmanifest', 'icon-192.png']))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
@@ -8,6 +8,11 @@ self.addEventListener('fetch', e => {
   const u = new URL(r.url); if (u.origin !== location.origin) return;
   if (r.mode === 'navigate' || u.pathname === '/' || u.pathname.endsWith('.html')) {
     e.respondWith(fetch(r).then(res => { const c = res.clone(); caches.open(CACHE).then(x => x.put('./', c)); return res; }).catch(() => caches.match('./')));
+    return;
+  }
+  // app identity (manifest, icons, share image): network-first, so a new logo or name always reaches installed apps
+  if (/\/(manifest\.webmanifest|icon-\d+\.png|apple-touch-icon\.png|favicon-\d+\.png|og\.png)$/.test(u.pathname)) {
+    e.respondWith(fetch(r).then(res => { if (res.ok) { const c = res.clone(); caches.open(CACHE).then(x => x.put(r, c)); } return res; }).catch(() => caches.match(r)));
     return;
   }
   // hashed files (app.<hash>.js, sb.<hash>.js, notes.<hash>.txt) never change: keep the newest of each, drop older ones
