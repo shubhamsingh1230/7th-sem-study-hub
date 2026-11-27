@@ -1,7 +1,7 @@
 {
   "name": "Semcrasher",
   "short_name": "Semcrasher",
-  "description": "Semcrasher: top past-paper answers, mock tests, flashcards and a class leaderboard. Now live for SSTC CSE 7th semester.",
+  "description": "Semcrasher: the most asked past-paper questions with full answers, video lessons, quick revision and a class leaderboard.",
   "start_url": "./#home",
   "scope": "./",
   "display": "standalone",
@@ -27,5 +27,40 @@
       "purpose": "maskable"
     }
   ],
-  "id": "./"
+  "id": "./",
+  "shortcuts": [
+    {
+      "name": "Continue where I left off",
+      "short_name": "Continue",
+      "url": "./#continue",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Search questions",
+      "short_name": "Search",
+      "url": "./#find",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Quick revise",
+      "short_name": "Quick revise",
+      "url": "./#revise",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }
